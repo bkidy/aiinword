@@ -12,5 +12,6 @@
 
 ## 使用效果
 /GPT 开头，光标结束，中间的内容会作为提问内容
+注意：VBA不支持流式，所以答案根据长度会有一定等待时间。需要魔法
 ![image](https://github.com/bkidy/aiinword/assets/13296325/c9340f52-b4e6-4c25-92dd-f932d756053c)
 
