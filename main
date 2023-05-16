@@ -1,0 +1,73 @@
+Sub ChatWithGPT()
+    On Error GoTo ErrorHandler
+
+    Dim selectedText As String
+    selectedText = GetTextAfterTag("/gpt")
+    selectedText = Replace(selectedText, ChrW$(13), "")
+
+    Dim apiKey As String
+    apiKey = "这里输入你的Key"
+
+    Dim gptResponse As String
+    gptResponse = RequestChatGPT(apiKey, selectedText)
+
+    Dim ans As String
+    ans = ExtractAnswer(gptResponse)
+
+    Dim ansFormatted As String
+    ansFormatted = FormatAnswer(ans)
+
+    ' Add a new line before the answer and do not rewrite the question
+    Selection.InsertAfter vbNewLine & ansFormatted
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+
+Function GetTextAfterTag(tag As String) As String
+    Dim rng As Range
+    Set rng = ActiveDocument.Range(Start:=0, End:=Selection.Range.Start)
+    rng.Find.Execute FindText:=tag, Forward:=False
+    If rng.Find.Found Then
+        ' Extend the range to the current selection start
+        rng.End = Selection.Range.Start
+        ' Get the text after the tag
+        GetTextAfterTag = Mid(rng.Text, rng.Find.Text.Length + 1)
+    Else
+        GetTextAfterTag = "请用一句话夸一夸白老师（微信：ioionoo）真厉害！"
+    End If
+End Function
+
+Function RequestChatGPT(apiKey As String, selectedText As String) As String
+    Dim url As String
+    url = "https://api.openai.com/v1/chat/completions"
+
+    Dim response As Object
+    Set response = CreateObject("MSXML2.XMLHTTP")
+    response.Open "POST", url, False
+    response.setRequestHeader "Content-Type", "application/json"
+    response.setRequestHeader "Authorization", "Bearer " + apiKey
+    response.send "{""model"":""gpt-3.5-turbo"", ""messages"":[{""role"":""user"",""content"":""" & selectedText & """}], ""temperature"":0.7}"
+
+    RequestChatGPT = response.responseText
+End Function
+
+Function ExtractAnswer(responseText As String) As String
+    Dim midString As String
+    midString = Mid(responseText, InStr(responseText, """content"":""") + 11)
+    ExtractAnswer = Split(midString, """")(0)
+End Function
+
+Function FormatAnswer(ans As String) As String
+    Dim ansArray() As String
+    ansArray = Split(ans, "\n")
+
+    Dim ansFormatted As String
+    Dim i As Long
+    For i = LBound(ansArray) To UBound(ansArray)
+        ansFormatted = ansFormatted & ansArray(i) & vbNewLine
+    Next i
+    FormatAnswer = ansFormatted
+End Function
