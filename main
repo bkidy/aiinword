@@ -6,7 +6,7 @@ Sub ChatWithGPT()
     selectedText = Replace(selectedText, ChrW$(13), "")
 
     Dim apiKey As String
-    apiKey = "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"
+    apiKey = "这里填写你最新的key"
 
     Dim gptResponse As String
     gptResponse = RequestChatGPT(apiKey, selectedText)
