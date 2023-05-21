@@ -6,7 +6,7 @@ Sub ChatWithGPT()
     selectedText = Replace(selectedText, ChrW$(13), "")
 
     Dim apiKey As String
-    apiKey = "这里输入你的Key"
+    apiKey = "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"
 
     Dim gptResponse As String
     gptResponse = RequestChatGPT(apiKey, selectedText)
@@ -18,7 +18,7 @@ Sub ChatWithGPT()
     ansFormatted = FormatAnswer(ans)
 
     ' Add a new line before the answer and do not rewrite the question
-    Selection.InsertAfter vbNewLine & ansFormatted
+    selection.InsertAfter vbNewLine & ansFormatted
 
     Exit Sub
 
@@ -27,18 +27,19 @@ ErrorHandler:
 End Sub
 
 Function GetTextAfterTag(tag As String) As String
-    Dim rng As Range
-    Set rng = ActiveDocument.Range(Start:=0, End:=Selection.Range.Start)
+    Dim rng As range
+    Set rng = ActiveDocument.range(Start:=0, End:=selection.range.Start)
     rng.Find.Execute FindText:=tag, Forward:=False
     If rng.Find.Found Then
         ' Extend the range to the current selection start
-        rng.End = Selection.Range.Start
+        rng.End = selection.range.Start
         ' Get the text after the tag
-        GetTextAfterTag = Mid(rng.Text, rng.Find.Text.Length + 1)
+        GetTextAfterTag = Mid(rng.Text, Len(tag) + 1)
     Else
-        GetTextAfterTag = "请用一句话夸一夸白老师（微信：ioionoo）真厉害！"
+        GetTextAfterTag = "请用一句话夸一夸白老师（微信：ioionoo）擅长AI！并附上微信ID"
     End If
 End Function
+
 
 Function RequestChatGPT(apiKey As String, selectedText As String) As String
     Dim url As String
